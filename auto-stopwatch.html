@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Stopwatch Timer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .input-container {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="time"] {
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .timer {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Auto Stopwatch Timer</h1>
+        <div class="input-container">
+            <label for="start-time">Start Time:</label>
+            <input type="time" id="start-time" required>
+            <label for="end-time">End Time:</label>
+            <input type="time" id="end-time" required>
+            <button id="start-button">Start Timer</button>
+        </div>
+        <div id="timer" class="timer">
+            <span id="hours">00</span>:<span id="minutes">00</span>:<span id="seconds">00</span>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+    <script>
+        document.getElementById('start-button').addEventListener('click', function() {
+            const startTimeInput = document.getElementById('start-time').value;
+            const endTimeInput = document.getElementById('end-time').value;
+            
+            if (!startTimeInput || !endTimeInput) {
+                alert("Please enter both start and end times.");
+                return;
+            }
+
+            const now = new Date();
+            const startTime = new Date();
+            const endTime = new Date();
+            
+            // Set start time
+            const [startHours, startMinutes] = startTimeInput.split(':');
+            startTime.setHours(parseInt(startHours), parseInt(startMinutes), 0, 0);
+            
+            // Set end time
+            const [endHours, endMinutes] = endTimeInput.split(':');
+            endTime.setHours(parseInt(endHours), parseInt(endMinutes), 0, 0);
+
+            // If end time is before start time, assume it's for the next day
+            if (endTime < startTime) {
+                endTime.setDate(endTime.getDate() + 1);
+            }
+
+            startCountdown(startTime, endTime);
+        });
+
+        function startCountdown(startTime, endTime) {
+            // Clear any previous message
+            document.getElementById('message').textContent = '';
+            
+            const timerInterval = setInterval(() => {
+                const now = new Date();
+                const remainingTime = endTime - now;
+
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('hours').textContent = '00';
+                    document.getElementById('minutes').textContent = '00';
+                    document.getElementById('seconds').textContent = '00';
+                    document.getElementById('message').textContent = "Time's up!";
+                    return;
+                }
+
+                // Calculate hours, minutes, and seconds
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                // Display the result
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+                
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
