@@ -14,6 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
         .container {
             text-align: center;
@@ -21,6 +22,8 @@
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 2;
         }
         h1 {
             font-size: 2.5em;
@@ -63,9 +66,48 @@
             margin-top: 20px;
             font-size: 1.5em;
         }
+        .background-hourglass {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .background-hourglass.active {
+            opacity: 0.2;
+        }
+        @keyframes sandFlow {
+            from {
+                d: path('M150,50 Q150,50 150,150 Q150,150 150,250');
+            }
+            to {
+                d: path('M150,50 Q250,150 150,250 Q50,150 150,50');
+            }
+        }
+        .sand-path {
+            animation: sandFlow 2s infinite alternate ease-in-out;
+        }
     </style>
 </head>
 <body>
+    <svg class="background-hourglass" id="hourglass" viewBox="0 0 300 300">
+        <!-- Hourglass outline -->
+        <path d="M100,50 L200,50 L150,150 L200,250 L100,250 L150,150 Z" 
+              fill="none" 
+              stroke="#4CAF50" 
+              stroke-width="4"/>
+        <!-- Animated sand -->
+        <path class="sand-path" 
+              d="M150,50 Q150,50 150,150 Q150,150 150,250"
+              fill="none" 
+              stroke="#4CAF50" 
+              stroke-width="3"/>
+    </svg>
+    
     <div class="container">
         <h1>Auto Stopwatch Timer</h1>
         <div class="input-container">
@@ -107,6 +149,9 @@
                 endTime.setDate(endTime.getDate() + 1);
             }
 
+            // Show hourglass animation
+            document.getElementById('hourglass').classList.add('active');
+
             startCountdown(startTime, endTime);
         });
 
@@ -124,6 +169,8 @@
                     document.getElementById('minutes').textContent = '00';
                     document.getElementById('seconds').textContent = '00';
                     document.getElementById('message').textContent = "Time's up!";
+                    // Hide hourglass animation
+                    document.getElementById('hourglass').classList.remove('active');
                     return;
                 }
 
